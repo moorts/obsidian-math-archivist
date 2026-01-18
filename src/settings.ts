@@ -11,7 +11,7 @@ export const DEFAULT_SETTINGS: ArchivistSettings = {
 	defaultContent: ''
 }
 
-export class SampleSettingTab extends PluginSettingTab {
+export class ArchivistSettingTab extends PluginSettingTab {
 	plugin: MathArchivist;
 
 	constructor(app: App, plugin: MathArchivist) {
