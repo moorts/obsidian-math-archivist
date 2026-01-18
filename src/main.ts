@@ -103,28 +103,22 @@ export default class MathArchivist extends Plugin {
 	}
 
 	async createNoteWithNewTag(content: string) {
+		const nextTag = this.getNextTagAndIncrementCounter();
+		const fileName = nextTag + '.md';
+		const filePath = path.join(this.settings.tagPath, fileName);
+		const normalizedPath = normalizePath(filePath);
+
 		try {
-			const nextTag = this.getNextTagAndIncrementCounter();
-			const fileName = nextTag + '.md';
-			const filePath = path.join(this.settings.tagPath, fileName);
-			const normalizedPath = normalizePath(filePath);
-
-			try {
-				const file = await this.app.vault.create(normalizedPath, content);
-				new Notice(`Created note: ${file.name}`);
-				
-				// Open the new note
-				const activeLeaf = this.app.workspace.getLeaf(false);
-				if (activeLeaf) {
-					await activeLeaf.openFile(file);
-				}
-			} catch (error) {
-				new Notice(`Error creating note: ${error}`);
+			const file = await this.app.vault.create(normalizedPath, content);
+			new Notice(`Created note: ${file.name}`);
+			
+			// Open the new note
+			const activeLeaf = this.app.workspace.getLeaf(false);
+			if (activeLeaf) {
+				await activeLeaf.openFile(file);
 			}
-
 		} catch (error) {
-			// Already handled in createNote
-			console.log(error);
+			new Notice(`Error creating note: ${error}`);
 		}
 	}
 
