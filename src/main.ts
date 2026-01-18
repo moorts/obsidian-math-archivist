@@ -7,7 +7,7 @@ const path = require('path');
 
 export default class MathArchivist extends Plugin {
 	settings: ArchivistSettings;
-	private tagCounter: number = undefined;
+	private tagCounter: number;
 
 	async onload() {
 		await this.loadSettings();
@@ -62,13 +62,12 @@ export default class MathArchivist extends Plugin {
 			callback: async () => {
 				let maxTag = 1;
 
-				const tagFiles = this.app.vault.getFolderByPath(this.settings.tagPath).children.filter((file) => file instanceof TFile);
+				const tagFiles = this.app.vault.getFolderByPath(this.settings.tagPath).children.filter((file) => file instanceof TFile) || [];
 
 				const regex = /^[A-Z0-9]{4}.md$/
 
 				for (const file of tagFiles) {
 					if (regex.test(file.name)) {
-						console.log(file.basename, parseInt(file.basename, 36));
 						maxTag = Math.max(maxTag, parseInt(file.basename, 36));
 					}
 				}
@@ -152,6 +151,8 @@ const NOTE_TYPES = [
 ];
 
 class NoteTypeModal extends FuzzySuggestModal<string> {
+	private onSubmit: (string) => void;
+
 	constructor(app: App, onSubmit: (result: string) => void) {
 		super(app);
 		this.onSubmit = onSubmit;
