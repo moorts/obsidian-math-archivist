@@ -62,7 +62,9 @@ export default class MathArchivist extends Plugin {
 			callback: async () => {
 				let maxTag = 1;
 
-				const tagFiles = this.app.vault.getFolderByPath(this.settings.tagPath).children.filter((file) => file instanceof TFile) || [];
+				const folder = this.app.vault.getFolderByPath(this.settings.tagPath);
+				const children = folder.children || [];
+				const tagFiles = children.filter((file) => file instanceof TFile);
 
 				const regex = /^[A-Z0-9]{4}.md$/
 
@@ -151,7 +153,7 @@ const NOTE_TYPES = [
 ];
 
 class NoteTypeModal extends FuzzySuggestModal<string> {
-	private onSubmit: (string) => void;
+	private onSubmit: (result: string) => void;
 
 	constructor(app: App, onSubmit: (result: string) => void) {
 		super(app);
