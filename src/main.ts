@@ -63,8 +63,11 @@ export default class MathArchivist extends Plugin {
 				let maxTag = 1;
 
 				const folder = this.app.vault.getFolderByPath(this.settings.tagPath);
-				const children = folder.children || [];
-				const tagFiles = children.filter((file) => file instanceof TFile);
+				if (folder === null) {
+					return;
+				}
+
+				const tagFiles = folder.children.filter((file) => file instanceof TFile);
 
 				const regex = /^[A-Z0-9]{4}.md$/
 
