@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "math-archivist",
+	"name": "Math Archivist",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Does math note management stuff.",
+	"author": "Moorts",
+	"authorUrl": "",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }

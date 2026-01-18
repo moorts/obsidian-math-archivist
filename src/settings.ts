@@ -1,18 +1,20 @@
 import {App, PluginSettingTab, Setting} from "obsidian";
-import MyPlugin from "./main";
+import MathArchivist from "./main";
 
-export interface MyPluginSettings {
-	mySetting: string;
+export interface ArchivistSettings {
+	tagPath: string;
+	defaultContent: string;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+export const DEFAULT_SETTINGS: ArchivistSettings = {
+	tagPath: '/',
+	defaultContent: ''
 }
 
 export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	plugin: MathArchivist;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: MathArchivist) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -23,13 +25,13 @@ export class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Settings #1')
-			.setDesc('It\'s a secret')
+			.setName('Tag Path')
+			.setDesc('Location for tag files.')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder('Enter path')
+				.setValue(this.plugin.settings.tagPath)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.tagPath = value;
 					await this.plugin.saveSettings();
 				}));
 	}
