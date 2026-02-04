@@ -143,6 +143,7 @@ const NOTE_TYPES = [
 	'Remark',
 	'Example',
 	'Corollary',
+	'Exercise',
 ];
 
 class NoteTypeModal extends FuzzySuggestModal<string> {
