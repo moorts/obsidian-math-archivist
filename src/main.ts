@@ -26,8 +26,9 @@ export default class MathArchivist extends Plugin {
 			id: 'create-new-tag-from-selection',
 			name: 'Create new tag from selection',
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
+				const tags = app.metadataCache.getFileCache(view.file).frontmatter.tags;
 				editor.replaceSelection(`![[${this.getNextTag()}]]`);
-				this.createNoteWithNewTag(editor.getSelection());
+				this.createNoteWithNewTag(editor.getSelection(), "", tags);
 			},
 		});
 
@@ -36,8 +37,7 @@ export default class MathArchivist extends Plugin {
 			name: 'Create new tag with type',
 			callback: async () => {
 				new NoteTypeModal(this.app, (result) => {
-					let content = `**${result} ${this.getNextTag()}.** `;
-					this.createNoteWithNewTag(content);
+					this.createNoteWithNewTag('', result);
 				}).open();
 			}
 		});
@@ -46,10 +46,10 @@ export default class MathArchivist extends Plugin {
 			id: 'create-new-tag-with-type-from-selection',
 			name: 'Create new tag with type from selection.',
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
+
+				const tags = app.metadataCache.getFileCache(view.file).frontmatter.tags;
 				new NoteTypeModal(this.app, (result) => {
-					let nextTag = this.getNextTag();
-					let content = `**${result} ${nextTag}.** ${editor.getSelection()}`;
-					this.createNoteWithNewTag(content);
+					this.createNoteWithNewTag(editor.getSelection(), result, tags);
 					editor.replaceSelection(`![[${nextTag}]]`);
 				}).open();
 			}
@@ -98,11 +98,13 @@ export default class MathArchivist extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	async createNoteWithNewTag(content: string) {
+	async createNoteWithNewTag(raw_content: string, note_type: string|undefined, note_tags:string[] = []) {
 		const nextTag = this.getNextTagAndIncrementCounter();
 		const fileName = nextTag + '.md';
 		const filePath = path.join(this.settings.tagPath, fileName);
 		const normalizedPath = normalizePath(filePath);
+
+		const content = this.applyTemplate(raw_content, note_type, nextTag, note_tags);
 
 		try {
 			const file = await this.app.vault.create(normalizedPath, content);
@@ -116,6 +118,27 @@ export default class MathArchivist extends Plugin {
 		} catch (error) {
 			new Notice(`Error creating note: ${error}`);
 		}
+	}
+
+	private applyTemplate(raw_content: string, note_type: string|undefined, tag: string, note_tags: string[] = []): string {
+		let frontmatter = "---\ntags:\n" + "  - math\n"
+
+		if(note_type) {
+			frontmatter += `  - ${note_type}\n`
+		}
+
+		for(let note_tag of note_tags) {
+			if (note_tag === "math" || NOTE_TYPES.includes(note_tag)) {
+				continue;
+			}
+			frontmatter += `  - ${note_tag}\n`;
+		}
+
+		frontmatter += "---\n"
+
+		const type_str = note_type ? `**${note_type} ${tag}.** ` : ""
+
+		return frontmatter + type_str + raw_content;
 	}
 
 	private getNextTagAndIncrementCounter(): string {
@@ -136,6 +159,7 @@ export default class MathArchivist extends Plugin {
 }
 
 const NOTE_TYPES = [
+	'Algorithm',
 	'Definition',
 	'Lemma',
 	'Proposition',
