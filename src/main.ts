@@ -27,8 +27,9 @@ export default class MathArchivist extends Plugin {
 			name: 'Create new tag from selection',
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const tags = app.metadataCache.getFileCache(view.file).frontmatter.tags;
+				const content = editor.getSelection();
 				editor.replaceSelection(`![[${this.getNextTag()}]]`);
-				this.createNoteWithNewTag(editor.getSelection(), "", tags);
+				this.createNoteWithNewTag(content, "", tags);
 			},
 		});
 
@@ -48,9 +49,10 @@ export default class MathArchivist extends Plugin {
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 
 				const tags = app.metadataCache.getFileCache(view.file).frontmatter.tags;
+				const content = editor.getSelection();
 				new NoteTypeModal(this.app, (result) => {
-					this.createNoteWithNewTag(editor.getSelection(), result, tags);
-					editor.replaceSelection(`![[${nextTag}]]`);
+					editor.replaceSelection(`![[${this.getNextTag()}]]`);
+					this.createNoteWithNewTag(content, result, tags);
 				}).open();
 			}
 		});
